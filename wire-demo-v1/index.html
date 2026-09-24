@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Wire — Talking to a server with only HTML &amp; CSS</title>
+  <meta name="description" content="A demo of Wire: live, server-driven pages built with only HTML and CSS. Forms target iframes, streams push HTML, fragments poll, and CSS rules send beacons.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!--
+    The page layout lives in a Declarative Shadow DOM with named slots.
+    The server streams this file in order, but it holds back the "report"
+    section and sends it at the very end. It still appears in its slot near the
+    top, so the server has filled that part of the page out of order.
+  -->
+  <div class="app">
+    <template shadowrootmode="open">
+      <style>
+        :host { display: block; }
+        .layout {
+          display: grid;
+          gap: 1.25rem;
+          grid-template-columns: minmax(0, 1fr);
+          grid-template-areas: "intro" "report" "likes" "stats" "post" "wall" "vote" "how";
+        }
+        @media (min-width: 60rem) {
+          .layout {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-areas:
+              "intro intro report"
+              "likes stats stats"
+              "post  wall  wall"
+              "vote  vote  how";
+          }
+        }
+        .pending {
+          grid-area: report;
+          display: grid;
+          place-content: center;
+          gap: 0.5rem;
+          min-height: 12rem;
+          padding: 1.5rem;
+          border: 1px dashed currentColor;
+          border-radius: 1.25rem;
+          opacity: 0.55;
+          text-align: center;
+          font: inherit;
+        }
+        .pending::before {
+          content: "";
+          justify-self: center;
+          width: 1.5rem; height: 1.5rem;
+          border: 2px solid currentColor;
+          border-right-color: transparent;
+          border-radius: 50%;
+          animation: spin 0.9s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(1turn); } }
+        @media (prefers-reduced-motion: reduce) { .pending::before { animation: none; } }
+      </style>
+      <slot name="header"></slot>
+      <main class="layout" id="main">
+        <slot name="intro"></slot>
+        <slot name="report"><p class="pending">Waiting for the server’s slow part…</p></slot>
+        <slot name="likes"></slot>
+        <slot name="stats"></slot>
+        <slot name="post"></slot>
+        <slot name="wall"></slot>
+        <slot name="vote"></slot>
+        <slot name="how"></slot>
+      </main>
+      <slot name="footer"></slot>
+    </template>
+
+    <header slot="header" class="site-header">
+      <span class="brand"><span class="brand-mark" aria-hidden="true"></span> Wire</span>
+      <span class="pill"><span class="live-dot" aria-hidden="true"></span> 0 KB of JavaScript</span>
+    </header>
+
+    <section slot="intro" class="card intro">
+      <p class="label">Experiment · HTML + CSS ↔ server</p>
+      <h1>A live page with <em>no</em> JavaScript.</h1>
+      <p class="lede">Everything below talks to a server using only what browsers already do: forms, iframes, streamed HTML, meta refresh and CSS <code>url()</code> requests. Open this page in two windows and watch them update each other.</p>
+    </section>
+
+    <section slot="likes" class="card likes">
+      <p class="label">1 · Form → named iframe</p>
+      <h2>Like this idea</h2>
+      <iframe name="likes" src="/frag/likes" title="Like counter" class="frame frame-likes"></iframe>
+      <form action="/like" method="post" target="likes">
+        <button class="btn" type="submit">♥ Like</button>
+      </form>
+      <p class="hint"><code>target="likes"</code> sends the reply into the iframe instead of reloading the page.</p>
+    </section>
+
+    <section slot="stats" class="card">
+      <p class="label">4 · Polling fragment</p>
+      <h2>Live dashboard</h2>
+      <iframe src="/frag/stats" title="Live server stats" class="frame frame-stats"></iframe>
+      <p class="hint">This frame reloads itself every 3 s with <code>&lt;meta http-equiv="refresh"&gt;</code>.</p>
+    </section>
+
+    <section slot="post" class="card">
+      <p class="label">2 · Self-rendering form</p>
+      <h2>Post a message</h2>
+      <iframe src="/frag/comment-form" title="Message form" class="frame frame-form"></iframe>
+      <p class="hint">The form posts to its own frame, so a fresh, empty form comes back.</p>
+    </section>
+
+    <section slot="wall" class="card">
+      <p class="label">3 · Streaming “forever frame”</p>
+      <h2>Message wall <span class="pill"><span class="live-dot" aria-hidden="true"></span> live</span></h2>
+      <iframe src="/stream/comments" title="Live message wall" class="frame frame-wall"></iframe>
+      <p class="hint">This response never finishes. The server keeps writing new HTML into it as messages arrive.</p>
+    </section>
+
+    <section slot="vote" class="card">
+      <p class="label">5 · CSS beacons</p>
+      <h2>Which technique is your favourite?</h2>
+      <fieldset class="choices">
+        <legend class="visually-hidden">Favourite technique</legend>
+        <label class="choice c-forms"><input type="radio" name="vote" value="forms"> Forms → iframe</label>
+        <label class="choice c-streams"><input type="radio" name="vote" value="streams"> Streaming</label>
+        <label class="choice c-polling"><input type="radio" name="vote" value="polling"> Polling</label>
+        <label class="choice c-beacons"><input type="radio" name="vote" value="beacons"> CSS beacons</label>
+      </fieldset>
+      <p class="hint">Picking one makes CSS load <code>background-image: url("/beacon?e=…")</code>. The server counts that request as a vote, and the dashboard shows it.</p>
+    </section>
+
+    <section slot="how" class="card">
+      <p class="label">Under the hood</p>
+      <h2>How it fits together</h2>
+      <details class="how">
+        <summary>Show the five techniques</summary>
+        <ol class="how-list">
+          <li><strong>Forms → iframe:</strong> <code>&lt;form target="name"&gt;</code> updates a single region.</li>
+          <li><strong>Self-rendering form:</strong> the reply is a new copy of the form.</li>
+          <li><strong>Streaming:</strong> the server never closes the response, so the HTML keeps growing.</li>
+          <li><strong>Polling:</strong> <code>meta refresh</code> reloads a single frame.</li>
+          <li><strong>CSS beacons:</strong> <code>:has(:checked)</code> + <code>url()</code> send a GET request.</li>
+        </ol>
+        <p class="hint">Opening this panel also sends a beacon. Watch “How opened” on the dashboard.</p>
+      </details>
+    </section>
+
+    <footer slot="footer" class="site-footer">
+      <p>Wire demo · The browser runs only HTML &amp; CSS. <code>server.py</code> (Python standard library) runs on the server.</p>
+    </footer>
+<!--WIRE:SLOW-->
+  </div>
+</body>
+</html>
