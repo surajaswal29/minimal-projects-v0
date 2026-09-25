@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Riftline: a 3D pipe racer in pure HTML &amp; CSS</title>
+  <meta name="description" content="Riftline is a 90-second 3D pipe racer with steering, jumping, collision detection, shields and scoring, built with nothing but HTML and CSS. Zero JavaScript.">
+  <meta property="og:title" content="Riftline">
+  <meta property="og:description" content="A 3D racer with real collision detection and zero JavaScript.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="course.css">
+</head>
+<body>
+  <!-- The whole game is one form. A reset clears every radio, which restarts every clock. -->
+  <form class="game" action="#" aria-label="Riftline game">
+
+    <!-- Controls. The five lane radios are the steering wheel: arrow keys move
+         between them, and holding Space on the focused one is "jump". -->
+    <fieldset class="sr">
+      <legend>Lane (use the left and right arrow keys to steer, hold Space to jump)</legend>
+      <input class="lane" type="radio" name="lane" id="l0" aria-label="Lane 1, far left">
+      <input class="lane" type="radio" name="lane" id="l1" aria-label="Lane 2">
+      <input class="lane" type="radio" name="lane" id="l2" aria-label="Lane 3, centre">
+      <input class="lane" type="radio" name="lane" id="l3" aria-label="Lane 4">
+      <input class="lane" type="radio" name="lane" id="l4" aria-label="Lane 5, far right">
+    </fieldset>
+    <input class="sr" type="checkbox" id="pause" accesskey="p" aria-label="Pause">
+
+    <!-- Starts the counters. Must come before the track in the document. -->
+    <span class="tally" aria-hidden="true"></span>
+
+    <div class="scene" aria-hidden="true">
+      <div class="nebula"></div>
+      <div class="stars"></div>
+      <div class="stars s2"></div>
+      <div class="stars s3"></div>
+      <div class="core"></div>
+    </div>
+
+    <div class="view" aria-hidden="true">
+      <div class="cam">
+        <div class="pipe">
+          <i class="floor k0"></i><i class="floor k1"></i><i class="floor k2"></i><i class="floor k3"></i><i class="floor k4"></i>
+          <i class="strut" style="--a:120deg"></i><i class="strut" style="--a:150deg"></i><i class="strut" style="--a:180deg"></i><i class="strut" style="--a:210deg"></i><i class="strut" style="--a:240deg"></i>
+          <i class="ring" style="--i:0"></i><i class="ring" style="--i:1"></i><i class="ring" style="--i:2"></i><i class="ring" style="--i:3"></i>
+          <i class="ring" style="--i:4"></i><i class="ring" style="--i:5"></i><i class="ring" style="--i:6"></i><i class="ring" style="--i:7"></i>
+          <i class="ring" style="--i:8"></i><i class="ring" style="--i:9"></i><i class="ring" style="--i:10"></i><i class="ring" style="--i:11"></i>
+          <i class="ring" style="--i:12"></i><i class="ring" style="--i:13"></i><i class="ring" style="--i:14"></i><i class="ring" style="--i:15"></i>
+        </div>
+
+        <div class="track">
+        <!-- course:begin -->
+        <i class="o wall k2 v1" style="--t:0.600s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v1" style="--t:0.600s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k0 v1" style="--t:3.600s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k1 v1" style="--t:3.600s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k1 v1" style="--t:3.600s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k2 v1" style="--t:3.600s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k3 v1" style="--t:3.600s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k3 v1" style="--t:3.600s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k4 v1" style="--t:3.600s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k0 v1" style="--t:6.600s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k1 v1" style="--t:6.600s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k2 v1" style="--t:6.600s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k2 v1" style="--t:6.600s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k3 v1" style="--t:6.600s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k4 v1" style="--t:6.600s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k2 v1" style="--t:9.600s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k2 v1" style="--t:9.800s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v1" style="--t:10.000s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v1" style="--t:10.200s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k0 v1" style="--t:10.400s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o sky k3 v1" style="--t:11.200s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o sky k3 v1" style="--t:11.420s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o sky k3 v1" style="--t:11.640s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k2 v1" style="--t:13.000s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k3 v1" style="--t:13.000s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k4 v1" style="--t:13.000s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k0 v1" style="--t:14.206s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k0 v1" style="--t:14.206s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k1 v1" style="--t:14.206s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k2 v1" style="--t:14.206s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k2 v1" style="--t:14.206s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k3 v1" style="--t:14.206s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k3 v1" style="--t:14.206s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k4 v1" style="--t:14.206s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v1" style="--t:15.382s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v1" style="--t:16.550s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v1" style="--t:17.773s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k2 v1" style="--t:18.848s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k2 v1" style="--t:19.048s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k2 v1" style="--t:19.248s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k2 v1" style="--t:19.448s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k2 v1" style="--t:19.648s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k0 v1" style="--t:20.420s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k0 v1" style="--t:20.420s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k1 v1" style="--t:20.420s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k1 v1" style="--t:20.420s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k2 v1" style="--t:20.420s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k3 v1" style="--t:20.420s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k4 v1" style="--t:20.420s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k1 v1" style="--t:21.553s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k1 v1" style="--t:21.553s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k2 v1" style="--t:21.553s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k3 v1" style="--t:21.553s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k4 v1" style="--t:21.553s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k4 v1" style="--t:21.553s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k0 v1" style="--t:22.798s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v1" style="--t:22.798s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k0 v1" style="--t:23.860s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k2 v1" style="--t:23.860s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v1" style="--t:23.860s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k0 v1" style="--t:24.850s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k0 v1" style="--t:24.850s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k1 v1" style="--t:24.850s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k2 v1" style="--t:24.850s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k2 v1" style="--t:24.850s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k3 v1" style="--t:24.850s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k3 v1" style="--t:24.850s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k4 v1" style="--t:24.850s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k1 v1" style="--t:25.898s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k4 v1" style="--t:25.898s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k0 v2" style="--t:30.250s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k0 v2" style="--t:30.510s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v2" style="--t:30.770s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v2" style="--t:31.030s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k2 v2" style="--t:31.290s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k2 v2" style="--t:31.550s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k0 v2" style="--t:32.219s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k1 v2" style="--t:32.219s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k1 v2" style="--t:32.219s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k2 v2" style="--t:32.219s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k2 v2" style="--t:32.219s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k3 v2" style="--t:32.219s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k4 v2" style="--t:32.219s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k4 v2" style="--t:32.219s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k3 v2" style="--t:33.244s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k3 v2" style="--t:33.504s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k2 v2" style="--t:33.764s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k2 v2" style="--t:34.024s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v2" style="--t:34.284s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v2" style="--t:34.544s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k0 v2" style="--t:35.298s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k1 v2" style="--t:35.298s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k2 v2" style="--t:35.298s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k3 v2" style="--t:35.298s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k3 v2" style="--t:35.298s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k4 v2" style="--t:35.298s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k1 v2" style="--t:36.122s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v2" style="--t:36.122s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v2" style="--t:36.122s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v2" style="--t:36.914s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v2" style="--t:36.914s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v2" style="--t:36.914s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k0 v2" style="--t:37.851s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v2" style="--t:37.851s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v2" style="--t:37.851s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v2" style="--t:37.851s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v2" style="--t:38.789s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v2" style="--t:38.789s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v2" style="--t:38.789s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k4 v2" style="--t:39.727s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k4 v2" style="--t:39.927s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k4 v2" style="--t:40.127s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k4 v2" style="--t:40.327s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k4 v2" style="--t:40.527s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k2 v2" style="--t:41.224s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k2 v2" style="--t:41.224s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k3 v2" style="--t:41.224s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k4 v2" style="--t:41.224s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k0 v2" style="--t:42.014s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k2 v2" style="--t:42.014s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k4 v2" style="--t:42.014s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v2" style="--t:42.893s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v2" style="--t:42.893s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v2" style="--t:42.893s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v2" style="--t:42.893s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k0 v2" style="--t:43.835s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v2" style="--t:43.835s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v2" style="--t:43.835s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v2" style="--t:43.835s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k1 v2" style="--t:44.658s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v2" style="--t:44.858s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v2" style="--t:45.058s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v2" style="--t:45.258s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v2" style="--t:45.458s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k0 v2" style="--t:46.147s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v2" style="--t:46.147s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v2" style="--t:46.147s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v2" style="--t:46.147s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v2" style="--t:46.928s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k3 v2" style="--t:46.928s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k4 v2" style="--t:46.928s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v2" style="--t:47.972s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v2" style="--t:47.972s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k0 v2" style="--t:48.972s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k1 v2" style="--t:48.972s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v2" style="--t:48.972s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v2" style="--t:48.972s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v2" style="--t:49.974s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v2" style="--t:49.974s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k0 v2" style="--t:50.924s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k1 v2" style="--t:50.924s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k2 v2" style="--t:50.924s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k3 v2" style="--t:50.924s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k3 v2" style="--t:50.924s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k4 v2" style="--t:50.924s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k0 v2" style="--t:51.933s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k0 v2" style="--t:51.933s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k1 v2" style="--t:51.933s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k2 v2" style="--t:51.933s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k3 v2" style="--t:51.933s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k3 v2" style="--t:51.933s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k4 v2" style="--t:51.933s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k4 v2" style="--t:51.933s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k0 v2" style="--t:52.717s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k0 v2" style="--t:52.977s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v2" style="--t:53.237s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v2" style="--t:53.497s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k2 v2" style="--t:53.757s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k2 v2" style="--t:54.017s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k1 v2" style="--t:54.804s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v2" style="--t:54.804s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k2 v2" style="--t:55.826s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k3 v2" style="--t:55.826s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v2" style="--t:55.826s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k0 v2" style="--t:56.686s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k1 v2" style="--t:56.686s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k2 v2" style="--t:56.686s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k0 v3" style="--t:60.600s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k0 v3" style="--t:60.600s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k1 v3" style="--t:60.600s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v3" style="--t:60.600s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k4 v3" style="--t:60.600s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k4 v3" style="--t:60.600s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k0 v3" style="--t:61.363s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v3" style="--t:61.363s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v3" style="--t:61.363s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v3" style="--t:61.363s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k0 v3" style="--t:62.222s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k0 v3" style="--t:62.222s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k1 v3" style="--t:62.222s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k2 v3" style="--t:62.222s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k2 v3" style="--t:62.222s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k3 v3" style="--t:62.222s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k4 v3" style="--t:62.222s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k4 v3" style="--t:62.222s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k1 v3" style="--t:63.034s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v3" style="--t:63.034s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k1 v3" style="--t:63.747s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k2 v3" style="--t:63.747s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k3 v3" style="--t:63.747s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k4 v3" style="--t:63.747s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v3" style="--t:64.472s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k3 v3" style="--t:64.472s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k4 v3" style="--t:64.472s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k0 v3" style="--t:65.119s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k1 v3" style="--t:65.119s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k2 v3" style="--t:65.119s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k3 v3" style="--t:65.119s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v3" style="--t:65.770s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v3" style="--t:65.770s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v3" style="--t:65.770s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k0 v3" style="--t:66.490s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v3" style="--t:66.490s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v3" style="--t:66.490s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v3" style="--t:66.490s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v3" style="--t:67.210s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v3" style="--t:67.210s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v3" style="--t:67.210s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k0 v3" style="--t:67.862s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v3" style="--t:67.862s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v3" style="--t:67.862s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v3" style="--t:67.862s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k0 v3" style="--t:68.650s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k0 v3" style="--t:68.910s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v3" style="--t:69.170s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v3" style="--t:69.430s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k2 v3" style="--t:69.690s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k2 v3" style="--t:69.950s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k0 v3" style="--t:70.466s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k1 v3" style="--t:70.466s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k2 v3" style="--t:70.466s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k3 v3" style="--t:70.466s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k4 v3" style="--t:70.466s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k0 v3" style="--t:71.116s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v3" style="--t:71.116s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v3" style="--t:71.116s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v3" style="--t:71.116s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k4 v3" style="--t:71.116s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k0 v3" style="--t:71.850s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v3" style="--t:71.850s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v3" style="--t:71.850s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v3" style="--t:71.850s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v3" style="--t:72.525s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k2 v3" style="--t:72.525s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k3 v3" style="--t:72.525s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k4 v3" style="--t:72.525s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k4 v3" style="--t:72.525s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k1 v3" style="--t:73.294s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v3" style="--t:73.294s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v3" style="--t:73.294s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v3" style="--t:73.294s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k3 v3" style="--t:73.994s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k3 v3" style="--t:74.254s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k2 v3" style="--t:74.514s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k2 v3" style="--t:74.774s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v3" style="--t:75.034s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k1 v3" style="--t:75.294s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k4 v3" style="--t:75.844s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k4 v3" style="--t:76.044s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k4 v3" style="--t:76.244s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k4 v3" style="--t:76.444s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o gem k4 v3" style="--t:76.644s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k0 v3" style="--t:77.219s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k0 v3" style="--t:77.219s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k1 v3" style="--t:77.219s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k3 v3" style="--t:77.219s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k3 v3" style="--t:77.219s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o beam k4 v3" style="--t:77.219s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k4 v3" style="--t:77.219s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k0 v3" style="--t:77.904s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v3" style="--t:77.904s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v3" style="--t:77.904s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k0 v3" style="--t:78.667s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v3" style="--t:78.667s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v3" style="--t:78.667s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v3" style="--t:78.667s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k0 v3" style="--t:79.430s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v3" style="--t:79.430s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k0 v3" style="--t:80.193s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v3" style="--t:80.193s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k2 v3" style="--t:80.193s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k3 v3" style="--t:80.193s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v3" style="--t:80.193s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k1 v3" style="--t:80.979s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k2 v3" style="--t:80.979s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o beam k3 v3" style="--t:80.979s"><i class="x"><i class="m"><i class="f pl"></i><i class="f pr"></i><i class="f bar"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o gem k3 v3" style="--t:80.979s"><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k0 v3" style="--t:81.744s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v3" style="--t:81.744s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k0 v3" style="--t:82.440s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k1 v3" style="--t:82.440s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k1 v3" style="--t:82.440s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k2 v3" style="--t:82.440s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o fence k3 v3" style="--t:82.440s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k3 v3" style="--t:82.440s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o fence k4 v3" style="--t:82.440s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o sky k4 v3" style="--t:82.440s"><i class="pillar"></i><i class="x"><i class="m"><i class="f d1"></i><i class="f d2"></i></i><i class="pts">+100</i></i></i>
+        <i class="o wall k0 v3" style="--t:83.269s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v3" style="--t:83.269s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k0 v3" style="--t:84.069s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v3" style="--t:84.069s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v3" style="--t:84.069s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k4 v3" style="--t:84.069s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k0 v3" style="--t:84.868s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k1 v3" style="--t:84.868s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <i class="o wall k2 v3" style="--t:84.868s"><i class="x"><i class="m"><i class="f fr"></i><i class="f tp"></i><i class="f sl"></i><i class="f sr"></i></i><i class="bu"><i></i><i></i><i></i><i></i><i></i><i></i></i></i></i>
+        <!-- course:end -->
+        </div>
+
+        <div class="rig">
+          <div class="ship">
+            <i class="shadow"></i>
+            <div class="hop">
+              <div class="bob"><div class="bank1"><div class="bank2"><div class="hull">
+                <i class="flame fl"></i><i class="flame fr"></i><i class="flame fl v"></i><i class="flame fr v"></i>
+                <i class="wing"></i>
+                <i class="deck"></i>
+                <i class="fin"></i>
+                <i class="canopy"></i>
+                <i class="tail"></i>
+                <i class="smoke"></i><i class="smoke s2"></i>
+                <i class="bubble"></i>
+              </div></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- The explosion is drawn in 2D over the ship's on-screen position, so no 3D plane can slice it. -->
+    <div class="wreck" aria-hidden="true"><div class="wreck-at"><i class="flash"></i><i class="shock"></i><i class="spark"></i><i class="spark"></i><i class="spark"></i><i class="spark"></i><i class="spark"></i><i class="spark"></i></div></div>
+    <div class="glare" aria-hidden="true"></div>
+    <div class="hurt" aria-hidden="true"></div>
+    <div class="warp" aria-hidden="true"></div>
+
+    <!-- Mouse and touch: tap left or right of the ship to steer, hold the middle to jump.
+         Each lane has its own set, and only the set for your lane is shown. -->
+    <div class="pads" aria-hidden="true">
+      <label class="pad pad-jump f0" for="l0"></label><label class="pad pad-r f0" for="l1"></label>
+      <label class="pad pad-l f1" for="l0"></label><label class="pad pad-jump f1" for="l1"></label><label class="pad pad-r f1" for="l2"></label>
+      <label class="pad pad-l f2" for="l1"></label><label class="pad pad-jump f2" for="l2"></label><label class="pad pad-r f2" for="l3"></label>
+      <label class="pad pad-l f3" for="l2"></label><label class="pad pad-jump f3" for="l3"></label><label class="pad pad-r f3" for="l4"></label>
+      <label class="pad pad-l f4" for="l3"></label><label class="pad pad-jump f4" for="l4"></label>
+    </div>
+
+    <header class="hud">
+      <div class="stats">
+        <p class="stat score"><span class="lbl">Score</span><span class="val"></span></p>
+        <p class="stat shards"><span class="lbl">Shards</span><span class="val"></span></p>
+      </div>
+      <div class="mid">
+        <span class="lbl sector-name"></span>
+        <div class="progress"><i></i></div>
+        <span class="dist"></span>
+      </div>
+      <div class="right">
+        <div class="shields" title="Shields" aria-label="Shields"><i></i><i></i><i></i></div>
+        <label class="btn" for="pause">Pause</label>
+        <button class="btn" type="reset" accesskey="r">Restart</button>
+      </div>
+    </header>
+
+    <div class="hints" aria-hidden="true">
+      <!-- hints:begin -->
+      <p class="hint" style="--at:1.2s"><b>Dodge the walls</b> <span>← → or tap left / right</span></p>
+      <p class="hint" style="--at:4.2s"><b>Jump the fences</b> <span>Hold Space or hold the centre</span></p>
+      <p class="hint" style="--at:7.2s"><b>Stay low under lasers</b> <span>Let go of jump</span></p>
+      <p class="hint" style="--at:10.4s"><b>Grab shards</b> <span>Gold: stay low · Violet: jump</span></p>
+      <!-- hints:end -->
+      <p class="hint sector" style="--at:29.6s"><b>Solar Rift</b> <span>Sector 2 · speed up</span></p>
+      <p class="hint sector" style="--at:59.6s"><b>Event Horizon</b> <span>Sector 3 · full throttle</span></p>
+      <p class="hint sector" style="--at:87.6s"><b>Core ahead</b> <span>Hold on</span></p>
+    </div>
+
+    <p class="nofocus">Take the controls: tap the track or press <kbd>Tab</kbd></p>
+
+    <!-- Title -->
+    <section class="panel title-screen" aria-labelledby="logo">
+      <div class="card">
+        <p class="kicker">A zero-JavaScript 3D racer</p>
+        <h1 class="logo" id="logo">Riftline</h1>
+        <p class="tagline">Ride the rift for 90 seconds and reach the core. Dodge walls, jump fences, duck lasers and grab shards. Collisions, shields and score all run in CSS.</p>
+        <dl class="keys">
+          <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Steer</dd></div>
+          <div><dt>Hold <kbd>Space</kbd></dt><dd>Jump</dd></div>
+          <div><dt>Touch / mouse</dt><dd>Tap sides, hold middle</dd></div>
+        </dl>
+        <ul class="legend">
+          <li style="--sw: var(--wall)">Wall: dodge</li>
+          <li style="--sw: var(--fence)">Fence: jump</li>
+          <li style="--sw: var(--laser)">Laser: stay low</li>
+          <li style="--sw: var(--gold)">Gold shard: stay low</li>
+          <li style="--sw: var(--violet)">Violet shard: jump</li>
+        </ul>
+        <div class="row">
+          <label class="btn big" for="l2" accesskey="s">Launch</label>
+        </div>
+        <button type="button" class="link" popovertarget="how">How does this work without JavaScript?</button>
+      </div>
+    </section>
+
+    <!-- Pause -->
+    <section class="panel pause-screen" aria-label="Paused">
+      <div class="card">
+        <h2>Paused</h2>
+        <div class="row">
+          <label class="btn big" for="pause">Resume</label>
+          <button class="btn" type="reset">Restart</button>
+        </div>
+        <p class="note">After resuming, click the track or press <kbd>Tab</kbd> to take the controls again.</p>
+      </div>
+    </section>
+
+    <!-- Game over -->
+    <section class="panel end over" aria-label="Game over">
+      <div class="card">
+        <p class="kicker">Shields down</p>
+        <h2>Hull breached</h2>
+        <div class="tally-card">
+          <div><span>Score</span><b class="t-score"></b></div>
+          <div><span>Shards</span><b class="t-shards"></b></div>
+          <div><span>Distance</span><b class="t-dist"></b></div>
+        </div>
+        <p class="note">You reached sector <b class="t-sector"></b>. Each hit window lasts 0.18 s, and a full hit costs one shield. A graze costs less.</p>
+        <div class="row">
+          <button class="btn big" type="reset">Fly again</button>
+          <button type="button" class="btn" popovertarget="how">How it works</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Victory -->
+    <section class="panel end win" aria-label="Core reached">
+      <div class="card">
+        <p class="kicker">90 seconds survived</p>
+        <h2>Core reached</h2>
+        <div class="tally-card">
+          <div><span>Score</span><b class="t-score"></b></div>
+          <div><span>Shards</span><b class="t-shards"></b></div>
+          <div><span>Shields left</span><b class="t-shield"></b></div>
+        </div>
+        <p class="note">Hazards hit: <b class="t-hits"></b>. Try again for every shard with no hits.</p>
+        <div class="row">
+          <button class="btn big" type="reset">Fly again</button>
+          <button type="button" class="btn" popovertarget="how">How it works</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="how" popover class="howto">
+      <h2>How Riftline works without JavaScript</h2>
+      <ol>
+        <li><b>Steering is a radio group.</b> Five hidden radios are the lanes. Arrow keys move between radios natively, and <code>:has(#l3:checked)</code> turns the ship to that lane.</li>
+        <li><b>Jumping is <code>:active</code>.</b> Holding Space on the focused radio makes it <code>:focus-visible:active</code>. A mouse click on a radio's label is not <code>:focus-visible</code>, so steering never counts as a jump.</li>
+        <li><b>The course is a timeline on <code>&lt;html&gt;</code>.</b> A stepped animation per lane sets a typed <code>@property</code> (0 clear, 1 wall, 2 fence, 3 laser) for the 0.18 s each hazard overlaps the ship.</li>
+        <li><b>Collision is a style query.</b> <code>@container style(--l3: 1) { body:has(#l3:checked) { … } }</code> is true only while you are in lane 3 and a wall is there.</li>
+        <li><b>Damage latches.</b> That rule un-pauses a shield "drain" animation on <code>&lt;body&gt;</code>. Paused animations keep their progress, so damage adds up and never comes back. When it ends, <code>--dead</code> flips to 1 and the world freezes.</li>
+        <li><b>Every object latches too.</b> A 50 ms animation on each shard or hazard runs only while it is hot and you are in its lane. Its end state sets <code>--boom</code> for the explosion and a <code>counter-increment</code> for the score.</li>
+        <li><b>The ship banks on its own.</b> Two nested rotations, one instant (−1.4 × lane angle) and one with a slow transition (+1.4 ×), add up to a roll into each turn that settles back to level.</li>
+      </ol>
+      <button type="button" class="btn big" popovertarget="how" popovertargetaction="hide">Got it</button>
+    </div>
+  </form>
+</body>
+</html>
