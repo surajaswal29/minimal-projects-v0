@@ -1,0 +1,760 @@
+/* Almanac — a slow guide to the seasons.
+   Plain CSS, no JavaScript. The season dial is four radio inputs; :root:has()
+   swaps the season tokens so the whole page re-themes. */
+
+@layer reset, tokens, base, layout, components, seasons, utilities;
+
+/* ---------- Registered properties (lets the sky gradient animate) ---------- */
+@property --sky-top    { syntax: "<color>"; inherits: true; initial-value: #cfe0e6; }
+@property --sky-bottom { syntax: "<color>"; inherits: true; initial-value: #f4efe2; }
+
+/* ---------- Reset ---------- */
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; }
+  * { margin: 0; }
+  ul, ol { padding: 0; list-style: none; }
+  fieldset { border: 0; padding: 0; min-width: 0; }
+  button, input { font: inherit; color: inherit; }
+  img, svg { display: block; max-width: 100%; }
+}
+
+/* ---------- Tokens ---------- */
+@layer tokens {
+  :root {
+    color-scheme: light dark;
+
+    --bg:       light-dark(#faf8f3, #111413);
+    --surface:  light-dark(#fffdf8, #181c1a);
+    --text:     light-dark(#1e2420, #e7ebe6);
+    --muted:    light-dark(#5c665f, #9ba69f);
+    --line:     light-dark(#e6e1d5, #27302c);
+    --bar:      light-dark(#dcd7ca, #2f3833);
+
+    --moon-lit:  light-dark(#f4ecd2, #efe7cd);
+    --moon-dark: light-dark(#2f3633, #232826);
+
+    --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    --radius: 1rem;
+    --shadow: 0 1px 2px rgb(20 30 25 / 0.05), 0 12px 32px rgb(20 30 25 / 0.07);
+    --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+    --slow: 0.9s;
+
+    --space: clamp(4.5rem, 3rem + 6vw, 8rem);
+    --container: 72rem;
+
+    /* Season defaults = spring (also the no-:has() fallback) */
+    --accent:    light-dark(#4f7d4c, #a8d19b);
+    --on-accent: light-dark(#ffffff, #102010);
+    --wash:      light-dark(#eef2e5, #161d17);
+
+    --sky-top: #cfe3e8;
+    --sky-bottom: #f6f0de;
+    --sun: #fbe6b0;
+    --sun-y: 26%;
+    --hill-1: #bcd3ae;
+    --hill-2: #95b98a;
+    --hill-3: #6f9a67;
+    --cloud: rgb(255 255 255 / 0.75);
+    --speck: #f3c6cf;
+    --speck-r: 50% 0 50% 0;
+    --speck-o: 0.9;
+  }
+}
+
+/* ---------- Base ---------- */
+@layer base {
+  html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  h1 { font-size: clamp(2.75rem, 1.6rem + 5vw, 5.25rem); }
+  h2 { font-size: clamp(1.9rem, 1.4rem + 2vw, 2.75rem); }
+  h3 { font-size: 1.6rem; }
+  h4 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    transition: color var(--slow) var(--ease);
+  }
+  p { text-wrap: pretty; }
+  em { font-style: italic; color: var(--accent); transition: color var(--slow) var(--ease); }
+  a { color: inherit; text-underline-offset: 0.2em; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+}
+
+/* ---------- Layout ---------- */
+@layer layout {
+  .container {
+    width: min(100% - 2rem, var(--container));
+    margin-inline: auto;
+  }
+  .section { padding-block: var(--space); }
+  .section-wash {
+    background: var(--wash);
+    transition: background-color var(--slow) var(--ease);
+  }
+  .section-head { display: grid; gap: 0.75rem; margin-bottom: clamp(2rem, 1.5rem + 2vw, 3.5rem); max-width: 40rem; }
+  .section-head-row { max-width: none; }
+  @media (min-width: 52rem) {
+    .section-head-row {
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: end;
+    }
+  }
+}
+
+/* ---------- Components ---------- */
+@layer components {
+  .skip {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 20;
+    padding: 0.6rem 1rem;
+    background: var(--text);
+    color: var(--bg);
+    border-radius: 0.5rem;
+  }
+  .skip:focus { top: 1rem; }
+
+  .eyebrow {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    transition: color var(--slow) var(--ease);
+  }
+  .muted { color: var(--muted); }
+
+  /* Header */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .header-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25rem 1.5rem;
+    padding-block: 0.9rem;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    text-decoration: none;
+  }
+  .brand-mark {
+    display: inline-block;
+    width: 1.15rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      linear-gradient(to top, var(--accent) 38%, transparent 38%),
+      radial-gradient(circle at 50% 70%, var(--sun) 0 34%, transparent 35%),
+      var(--sky-top);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text) 15%, transparent);
+    vertical-align: -0.15em;
+    transition: background-color var(--slow) var(--ease);
+  }
+  .nav-list {
+    display: flex;
+    gap: clamp(0.9rem, 0.5rem + 1.5vw, 2rem);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-list a {
+    display: inline-block;
+    padding-block: 0.4rem;
+    color: var(--muted);
+    font-size: 0.93rem;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.25s;
+  }
+  .nav-list a:hover { color: var(--text); }
+
+  /* Hero */
+  .hero { padding-block: clamp(3rem, 2rem + 5vw, 6.5rem) var(--space); }
+  .hero-grid {
+    display: grid;
+    gap: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+    align-items: center;
+  }
+  @media (min-width: 60rem) {
+    .hero-grid { grid-template-columns: 1.1fr 1fr; }
+  }
+  .hero-copy { display: grid; gap: 1.5rem; justify-items: start; }
+  .hero h1 { margin-block: 0.25rem 0.25rem; }
+  .lede { color: var(--muted); font-size: clamp(1.05rem, 1rem + 0.3vw, 1.2rem); max-width: 34rem; }
+
+  /* Season dial: a segmented control made of radio inputs */
+  .dial {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    gap: 0.15rem;
+    padding: 0.3rem;
+    margin-top: 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+  }
+  .dial legend {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .dial label { position: relative; cursor: pointer; }
+  .dial input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .dial span {
+    display: block;
+    padding: 0.55rem clamp(0.7rem, 0.4rem + 1.2vw, 1.1rem);
+    border-radius: 999px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.95rem;
+    transition: background-color 0.4s var(--ease), color 0.4s var(--ease);
+  }
+  .dial label:hover span { color: var(--text); }
+  .dial input:checked + span { background: var(--accent); color: var(--on-accent); }
+  .dial input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Scene: a CSS-only landscape driven by the season tokens */
+  .scene {
+    position: relative;
+    container-type: inline-size;
+    aspect-ratio: 4 / 3;
+    border-radius: calc(var(--radius) * 1.75);
+    overflow: hidden;
+    background: linear-gradient(to bottom, var(--sky-top), var(--sky-bottom) 70%);
+    box-shadow: var(--shadow);
+    isolation: isolate;
+    transition: --sky-top 1.2s var(--ease), --sky-bottom 1.2s var(--ease);
+  }
+  @media (min-width: 60rem) {
+    .scene { aspect-ratio: 4 / 5; }
+  }
+  .sun {
+    position: absolute;
+    left: 58%;
+    top: var(--sun-y);
+    width: 22%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--sun);
+    box-shadow: 0 0 0 1.2rem color-mix(in srgb, var(--sun) 35%, transparent),
+                0 0 5rem 1rem color-mix(in srgb, var(--sun) 55%, transparent);
+    transition: top 1.4s var(--ease), background-color 1.2s var(--ease), box-shadow 1.2s var(--ease);
+  }
+  .cloud {
+    position: absolute;
+    height: 7%;
+    border-radius: 999px;
+    background: var(--cloud);
+    filter: blur(1px);
+    transition: background-color 1.2s var(--ease);
+    animation: drift 38s linear infinite alternate;
+  }
+  .cloud::before {
+    content: "";
+    position: absolute;
+    left: 22%;
+    bottom: 45%;
+    width: 45%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: inherit;
+  }
+  .cloud-a { top: 16%; left: 8%; width: 30%; }
+  .cloud-b { top: 40%; left: 26%; width: 22%; animation-duration: 46s; animation-direction: alternate-reverse; }
+
+  .hill {
+    position: absolute;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    transition: background-color 1.2s var(--ease);
+  }
+  .hill-back  { left: -30%; right: 10%;  bottom: 0; height: 44%; background: var(--hill-1); }
+  .hill-mid   { left: 20%;  right: -40%; bottom: 0; height: 34%; background: var(--hill-2); }
+  .hill-front { left: -20%; right: -20%; bottom: -6%; height: 24%; background: var(--hill-3); }
+
+  .specks { position: absolute; inset: 0; pointer-events: none; }
+  .specks i {
+    position: absolute;
+    top: -6%;
+    width: 2.2%;
+    aspect-ratio: 1;
+    border-radius: var(--speck-r);
+    background: var(--speck);
+    opacity: var(--speck-o);
+    animation: fall 14s linear infinite;
+    transition: background-color 1.2s var(--ease), opacity 1.2s var(--ease);
+  }
+  .specks i:nth-child(1) { left: 8%;  animation-delay: -1s; }
+  .specks i:nth-child(2) { left: 22%; animation-delay: -8s;  animation-duration: 17s; }
+  .specks i:nth-child(3) { left: 35%; animation-delay: -4s;  width: 1.6%; }
+  .specks i:nth-child(4) { left: 48%; animation-delay: -11s; animation-duration: 19s; }
+  .specks i:nth-child(5) { left: 63%; animation-delay: -6s;  width: 1.8%; }
+  .specks i:nth-child(6) { left: 74%; animation-delay: -13s; animation-duration: 16s; }
+  .specks i:nth-child(7) { left: 86%; animation-delay: -2s;  width: 1.5%; }
+  .specks i:nth-child(8) { left: 94%; animation-delay: -9s;  animation-duration: 21s; }
+
+  .scene-tag {
+    position: absolute;
+    left: 1rem;
+    bottom: 1rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--surface) 80%, transparent);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    font-size: 0.8rem;
+    color: var(--text);
+    z-index: 1;
+  }
+
+  @keyframes drift { to { translate: 18cqw 0; } }
+  @keyframes fall {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    50%  { transform: translate(3cqw, 70cqw) rotate(180deg); }
+    100% { transform: translate(-2cqw, 140cqw) rotate(360deg); }
+  }
+
+  /* Season panels */
+  .panel {
+    display: grid;
+    gap: 2rem;
+    padding: clamp(1.5rem, 1rem + 2.5vw, 3rem);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: calc(var(--radius) * 1.5);
+    box-shadow: var(--shadow);
+    animation: rise 0.7s var(--ease);
+  }
+  @media (min-width: 56rem) {
+    .panel { grid-template-columns: 1fr 2fr; gap: 3.5rem; }
+  }
+  .panel-intro { display: grid; gap: 0.75rem; align-content: start; }
+  .panel-intro h3 { font-size: clamp(2rem, 1.6rem + 1.5vw, 2.75rem); }
+  .panel-intro p { color: var(--muted); }
+  .panel-cols {
+    display: grid;
+    gap: 1.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  }
+  .col { display: grid; gap: 0.8rem; align-content: start; }
+  .col ul { display: grid; gap: 0.55rem; }
+  .col li {
+    position: relative;
+    padding-left: 1.1rem;
+  }
+  .col li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 0.4rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.7;
+    transition: background-color var(--slow) var(--ease);
+  }
+  @keyframes rise {
+    from { opacity: 0; translate: 0 0.75rem; }
+  }
+
+  /* Daylight chart */
+  .light-grid { display: grid; gap: 2.5rem; align-items: center; }
+  @media (min-width: 60rem) {
+    .light-grid { grid-template-columns: 1fr 1.4fr; gap: 4rem; }
+    .light-grid .section-head { margin-bottom: 0; }
+  }
+  .stat { display: grid; gap: 0.1rem; margin-top: 1rem; }
+  .stat-num {
+    font-family: var(--serif);
+    font-size: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+    line-height: 1;
+    color: var(--text);
+  }
+  .stat-label { color: var(--muted); font-size: 0.95rem; }
+
+  .chart {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    padding: clamp(1.25rem, 1rem + 1.5vw, 2rem) clamp(1rem, 0.75rem + 1.5vw, 2rem) 2.75rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: calc(var(--radius) * 1.5);
+  }
+  .bars {
+    order: 2;
+    display: flex;
+    gap: 2px;
+    height: clamp(11rem, 9rem + 8vw, 15rem);
+    background:
+      linear-gradient(var(--line), var(--line)) top / 100% 1px no-repeat,
+      linear-gradient(var(--line), var(--line)) center / 100% 1px no-repeat,
+      linear-gradient(var(--line), var(--line)) bottom / 100% 1px no-repeat;
+  }
+  .bars li {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    cursor: default;
+  }
+  .bar {
+    position: relative;
+    width: min(100%, 1.75rem);
+    height: calc(var(--h) / 16 * 100%);
+    border-radius: 4px 4px 0 0;
+    background: var(--bar);
+    transition: background-color 0.6s var(--ease);
+  }
+  .bars li:hover .bar { background: color-mix(in srgb, var(--bar) 70%, var(--text)); }
+  .tip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.4rem);
+    translate: -50% 0.25rem;
+    padding: 0.2rem 0.45rem;
+    border-radius: 0.4rem;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, translate 0.2s;
+    z-index: 1;
+  }
+  .bars li:hover .tip { opacity: 1; translate: -50% 0; }
+  .m {
+    position: absolute;
+    bottom: -1.75rem;
+    left: 50%;
+    translate: -50% 0;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  @media (max-width: 34rem) {
+    .m-rest { display: none; }
+  }
+  .axis {
+    order: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: clamp(11rem, 9rem + 8vw, 15rem);
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-align: right;
+    line-height: 0;
+  }
+
+  /* Moon phases */
+  .moons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+    gap: 1rem;
+  }
+  .moons li {
+    display: grid;
+    justify-items: center;
+    gap: 0.3rem;
+    padding: 1.5rem 0.75rem 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    text-align: center;
+    transition: translate 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  }
+  .moons li:hover { translate: 0 -3px; box-shadow: var(--shadow); }
+  .moons strong { font-weight: 500; font-size: 0.92rem; margin-top: 0.6rem; }
+  .moons li > span:last-child { font-size: 0.8rem; color: var(--muted); }
+  .moon {
+    --size: 3.5rem;
+    --cut: calc(var(--size) * 0.3);
+    width: var(--size);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--moon-dark);
+    outline: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
+  }
+  .m-wax-cres { box-shadow: inset calc(var(--cut) * -1) 0 0 0 var(--moon-lit); }
+  .m-first    { background: linear-gradient(90deg, var(--moon-dark) 50%, var(--moon-lit) 50%); }
+  .m-wax-gib  { background: var(--moon-lit); box-shadow: inset var(--cut) 0 0 0 var(--moon-dark); }
+  .m-full     { background: var(--moon-lit); box-shadow: 0 0 1.5rem color-mix(in srgb, var(--moon-lit) 70%, transparent); }
+  .m-wan-gib  { background: var(--moon-lit); box-shadow: inset calc(var(--cut) * -1) 0 0 0 var(--moon-dark); }
+  .m-last     { background: linear-gradient(90deg, var(--moon-lit) 50%, var(--moon-dark) 50%); }
+  .m-wan-cres { box-shadow: inset var(--cut) 0 0 0 var(--moon-lit); }
+
+  /* Field guide rail (scroll snap) */
+  .rail {
+    --gutter: max(1rem, (100% - var(--container)) / 2);
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(80%, 18.5rem);
+    gap: 1rem;
+    padding: 0.5rem var(--gutter) 1.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+  }
+  .rail:focus-visible { outline-offset: -4px; }
+  .plant {
+    scroll-snap-align: start;
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+    padding: 1rem 1rem 1.4rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: calc(var(--radius) * 1.25);
+    transition: translate 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  }
+  .plant:hover { translate: 0 -4px; box-shadow: var(--shadow); }
+  .plant h3 { font-size: 1.5rem; }
+  .plant > p:not([class]) { color: var(--muted); font-size: 0.95rem; }
+  .plant-latin { font-family: var(--serif); font-style: italic; color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; }
+  .plant-meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
+  .plant-meta span {
+    padding: 0.1rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  /* Plant illustrations: two leaves and a bloom, coloured per plant */
+  .plant-art {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius);
+    background:
+      radial-gradient(circle at 50% 38%, var(--p2) 0 13%, transparent 13.5%),
+      radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--p2) 35%, transparent) 0 22%, transparent 22.5%),
+      linear-gradient(to top, color-mix(in srgb, var(--p1) 22%, transparent), transparent 70%),
+      var(--wash);
+    overflow: hidden;
+  }
+  .plant-art::before,
+  .plant-art::after {
+    content: "";
+    position: absolute;
+    bottom: 12%;
+    width: 30%;
+    aspect-ratio: 1;
+    background: var(--p1);
+    border-radius: 0 100% 0 100%;
+  }
+  .plant-art::before { left: 20%; rotate: -10deg; }
+  .plant-art::after  { right: 20%; rotate: 100deg; opacity: 0.8; }
+  .art-sorrel    { --p1: light-dark(#6f9a57, #86b56c); --p2: light-dark(#c9d98a, #b9cf73); }
+  .art-calendula { --p1: light-dark(#7aa06a, #8cb37a); --p2: light-dark(#f0a93b, #f2b451); }
+  .art-sage      { --p1: light-dark(#98ad9f, #a3b8aa); --p2: light-dark(#a99ac8, #b6a8d6); }
+  .art-honesty   { --p1: light-dark(#7c9a74, #8eaa86); --p2: light-dark(#c9b9d8, #d0c2dd); }
+  .art-chard     { --p1: light-dark(#4f7e4d, #6f9f6b); --p2: light-dark(#c9473d, #de6a5f); }
+  .art-hellebore { --p1: light-dark(#44685a, #6a9483); --p2: light-dark(#f1ede4, #e8e2d6); }
+
+  /* Letter */
+  .letter {
+    display: grid;
+    gap: 2rem;
+    padding: clamp(1.75rem, 1rem + 3vw, 3.5rem);
+    border-radius: calc(var(--radius) * 1.75);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+  .letter > div { display: grid; gap: 0.9rem; }
+  @media (min-width: 56rem) {
+    .letter { grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: center; }
+  }
+  .letter-form { display: grid; gap: 0.6rem; }
+  .letter-form label { font-size: 0.9rem; font-weight: 500; }
+  .field-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .field-row input {
+    flex: 1 1 14rem;
+    min-width: 0;
+    padding: 0.8rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--bg);
+  }
+  .field-row input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .field-row input:user-invalid { border-color: light-dark(#b4533c, #e08b72); }
+  .field-row button {
+    flex: 0 0 auto;
+    padding: 0.8rem 1.4rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--slow) var(--ease), filter 0.2s;
+  }
+  .field-row button:hover { filter: brightness(1.08); }
+  .hint { font-size: 0.82rem; color: var(--muted); }
+
+  /* Footer */
+  .site-footer { border-top: 1px solid var(--line); padding-block: 2rem; color: var(--muted); font-size: 0.9rem; }
+  .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; }
+  .site-footer a { text-decoration: none; }
+  .site-footer a:hover { color: var(--text); }
+}
+
+/* ---------- Seasons ---------- */
+@layer seasons {
+  /* Only the chosen season's content is shown */
+  :root:has(#s-spring:checked) [data-season]:not([data-season="spring"]),
+  :root:has(#s-summer:checked) [data-season]:not([data-season="summer"]),
+  :root:has(#s-autumn:checked) [data-season]:not([data-season="autumn"]),
+  :root:has(#s-winter:checked) [data-season]:not([data-season="winter"]) { display: none; }
+
+  /* Highlight that season's months in the chart */
+  :root:has(#s-spring:checked) [data-m="spring"] .bar,
+  :root:has(#s-summer:checked) [data-m="summer"] .bar,
+  :root:has(#s-autumn:checked) [data-m="autumn"] .bar,
+  :root:has(#s-winter:checked) [data-m="winter"] .bar { background: var(--accent); }
+
+  :root:has(#s-summer:checked) {
+    --accent: light-dark(#9a6b1f, #e6c27a);
+    --on-accent: light-dark(#ffffff, #231a08);
+    --wash: light-dark(#f7f0de, #1c1a14);
+    --sky-top: #a9d3e8;
+    --sky-bottom: #fbf1d6;
+    --sun: #ffd978;
+    --sun-y: 10%;
+    --hill-1: #c9d49a;
+    --hill-2: #a8bd72;
+    --hill-3: #869f55;
+    --speck: #f4d57a;
+    --speck-r: 50%;
+    --speck-o: 0.7;
+  }
+  :root:has(#s-autumn:checked) {
+    --accent: light-dark(#a4532f, #eb9f78);
+    --on-accent: light-dark(#ffffff, #2a1206);
+    --wash: light-dark(#f6ebe2, #1d1714);
+    --sky-top: #e8cdb6;
+    --sky-bottom: #f6e8d4;
+    --sun: #f7b27a;
+    --sun-y: 34%;
+    --hill-1: #d9b27d;
+    --hill-2: #c0834f;
+    --hill-3: #93613c;
+    --speck: #c8683c;
+    --speck-r: 0 60% 0 60%;
+    --speck-o: 0.85;
+  }
+  :root:has(#s-winter:checked) {
+    --accent: light-dark(#44698c, #a3c1dd);
+    --on-accent: light-dark(#ffffff, #0d1a26);
+    --wash: light-dark(#ebf0f3, #141a1e);
+    --sky-top: #b9c9d6;
+    --sky-bottom: #eef1f2;
+    --sun: #fbe9d0;
+    --sun-y: 48%;
+    --hill-1: #dfe6ea;
+    --hill-2: #c7d3da;
+    --hill-3: #f5f7f8;
+    --cloud: rgb(255 255 255 / 0.6);
+    --speck: #ffffff;
+    --speck-r: 50%;
+    --speck-o: 0.95;
+  }
+
+  /* Dusk versions of the scene for dark mode */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --sky-top: #1d2c33; --sky-bottom: #3a4035; --sun: #e9cf91;
+      --hill-1: #2f4430; --hill-2: #26382a; --hill-3: #1c2b20;
+      --cloud: rgb(210 225 230 / 0.16); --speck: #d9a6b1;
+    }
+    :root:has(#s-summer:checked) {
+      --sky-top: #1c2e3f; --sky-bottom: #4a4430; --sun: #f0c864;
+      --hill-1: #3d4629; --hill-2: #2f3a20; --hill-3: #232d18; --speck: #f0d27a;
+    }
+    :root:has(#s-autumn:checked) {
+      --sky-top: #2c2126; --sky-bottom: #5a3b2a; --sun: #e89a62;
+      --hill-1: #4d3522; --hill-2: #3b2819; --hill-3: #2a1d13; --speck: #d9784a;
+    }
+    :root:has(#s-winter:checked) {
+      --sky-top: #141d2a; --sky-bottom: #33404c; --sun: #dfe6ee;
+      --hill-1: #3a4652; --hill-2: #4a5864; --hill-3: #6c7a86;
+      --cloud: rgb(220 230 240 / 0.12); --speck: #eef3f7;
+    }
+  }
+
+  /* Browsers without :has(): show spring only and hide the dial */
+  @supports not selector(:has(a)) {
+    [data-season]:not([data-season="spring"]) { display: none; }
+    [data-m="spring"] .bar { background: var(--accent); }
+    .dial { display: none; }
+  }
+}
+
+/* ---------- Utilities ---------- */
+@layer utilities {
+  .visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+    }
+    .specks { display: none; }
+  }
+}
