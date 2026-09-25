@@ -7,6 +7,7 @@ A collection of small, minimal web projects built with plain HTML and CSS. Open 
 | 01 | Product Portfolio (Stillwater) | [`product-portfolio-v1/`](product-portfolio-v1/) |
 | 02 | Wire: HTML + CSS ↔ server experiment (run `python3 server.py`) | [`wire-demo-v1/`](wire-demo-v1/) |
 | 03 | Almanac: a slow guide to the seasons | [`seasonal-almanac-v1/`](seasonal-almanac-v1/) |
+| 04 | Kiln: a multipage ceramics studio site | [`ceramics-studio-v1/`](ceramics-studio-v1/) |
 
 ## Adding a project
 
