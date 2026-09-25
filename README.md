@@ -9,6 +9,7 @@ A collection of small, minimal web projects built with plain HTML and CSS. Open 
 | 03 | Almanac: a slow guide to the seasons | [`seasonal-almanac-v1/`](seasonal-almanac-v1/) |
 | 04 | Kiln: a multipage ceramics studio site | [`ceramics-studio-v1/`](ceramics-studio-v1/) |
 | 05 | Nebula Strike: a 3D arcade game in pure HTML + CSS | [`nebula-strike-v1/`](nebula-strike-v1/) |
+| 06 | Riftline: a 3D pipe racer with collision detection in pure HTML + CSS | [`riftline-v1/`](riftline-v1/) |
 
 ## Adding a project
 
