@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Almanac — A Slow Guide to the Seasons</title>
+  <meta name="description" content="Almanac is a quiet, seasonal field guide: what to sow, what to notice and how the light changes through spring, summer, autumn and winter.">
+  <meta property="og:title" content="Almanac — A Slow Guide to the Seasons">
+  <meta property="og:description" content="What to sow, what to notice and how the light changes, one season at a time.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#top" aria-label="Almanac, back to top">
+        <span class="brand-mark" aria-hidden="true"></span>
+        Almanac
+      </a>
+      <nav aria-label="Primary">
+        <ul class="nav-list">
+          <li><a href="#season">This season</a></li>
+          <li><a href="#light">Daylight</a></li>
+          <li><a href="#moon">Moon</a></li>
+          <li><a href="#guide">Field guide</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero + season dial. The four radios below re-theme the whole page via :has(). -->
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">A slow guide to the year · Edition 2026</p>
+          <h1 id="hero-title">The quiet turn<br>of the <em>seasons</em>.</h1>
+          <p class="lede">Almanac is a field guide for noticing. Pick a season to see what to sow, what to look for and how the light is changing, then step outside for ten minutes.</p>
+
+          <fieldset class="dial">
+            <legend>Choose a season</legend>
+            <label><input type="radio" name="season" id="s-spring" value="spring" checked><span>Spring</span></label>
+            <label><input type="radio" name="season" id="s-summer" value="summer"><span>Summer</span></label>
+            <label><input type="radio" name="season" id="s-autumn" value="autumn"><span>Autumn</span></label>
+            <label><input type="radio" name="season" id="s-winter" value="winter"><span>Winter</span></label>
+          </fieldset>
+        </div>
+
+        <div class="scene" aria-hidden="true">
+          <div class="sun"></div>
+          <div class="cloud cloud-a"></div>
+          <div class="cloud cloud-b"></div>
+          <div class="hill hill-back"></div>
+          <div class="hill hill-mid"></div>
+          <div class="hill hill-front"></div>
+          <div class="specks"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="scene-tag">
+            <span data-season="spring">Mar – May · Waking</span>
+            <span data-season="summer">Jun – Aug · Fullness</span>
+            <span data-season="autumn">Sep – Nov · Letting go</span>
+            <span data-season="winter">Dec – Feb · Rest</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Season detail panels -->
+    <section class="section" id="season" aria-labelledby="season-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">This season</p>
+          <h2 id="season-title">What the garden is asking for</h2>
+        </header>
+
+        <article class="panel" data-season="spring">
+          <div class="panel-intro">
+            <h3>Spring</h3>
+            <p>The soil warms a little each week. Work gently, sow little and often, and let the early weeds tell you the ground is ready.</p>
+          </div>
+          <div class="panel-cols">
+            <div class="col"><h4>Sow</h4><ul><li>Peas and broad beans</li><li>Radish, spinach, rocket</li><li>Sweet peas by the fence</li></ul></div>
+            <div class="col"><h4>Notice</h4><ul><li>Blackthorn blossom before its leaves</li><li>The first bumblebee queens</li><li>Birdsong starting before six</li></ul></div>
+            <div class="col"><h4>Rest</h4><ul><li>Don't rush tender plants out</li><li>Leave some dandelions for bees</li><li>One slow walk at dusk</li></ul></div>
+          </div>
+        </article>
+
+        <article class="panel" data-season="summer">
+          <div class="panel-intro">
+            <h3>Summer</h3>
+            <p>The days are long, and most of the work is watering and picking. Water in the evening, harvest in the morning, and sit in the shade at midday.</p>
+          </div>
+          <div class="panel-cols">
+            <div class="col"><h4>Sow</h4><ul><li>Salad every three weeks</li><li>Late carrots and beetroot</li><li>Kale for the winter</li></ul></div>
+            <div class="col"><h4>Notice</h4><ul><li>Swifts screaming overhead</li><li>Lime trees humming with bees</li><li>Warm stone after sunset</li></ul></div>
+            <div class="col"><h4>Rest</h4><ul><li>Let the lawn grow a little</li><li>Save seed from the best plants</li><li>Eat outside, even once</li></ul></div>
+          </div>
+        </article>
+
+        <article class="panel" data-season="autumn">
+          <div class="panel-intro">
+            <h3>Autumn</h3>
+            <p>Growth slows and the colours turn. It's the time to gather and store, plant bulbs for spring, and leave the seed heads standing for the birds.</p>
+          </div>
+          <div class="panel-cols">
+            <div class="col"><h4>Sow</h4><ul><li>Garlic and overwintering onions</li><li>Tulip and crocus bulbs</li><li>Green manure on bare beds</li></ul></div>
+            <div class="col"><h4>Notice</h4><ul><li>Spider webs heavy with dew</li><li>Geese moving in long lines</li><li>The smell of wet leaves</li></ul></div>
+            <div class="col"><h4>Rest</h4><ul><li>Leave a leaf pile for hedgehogs</li><li>Clean and oil the tools</li><li>Light a candle at five</li></ul></div>
+          </div>
+        </article>
+
+        <article class="panel" data-season="winter">
+          <div class="panel-intro">
+            <h3>Winter</h3>
+            <p>Very little grows, and that's fine. Plan next year, look at the bare shapes of the trees, and sit by a window while the light is short and low.</p>
+          </div>
+          <div class="panel-cols">
+            <div class="col"><h4>Sow</h4><ul><li>Nothing outside — plan instead</li><li>Microgreens on the sill</li><li>Order seeds by candlelight</li></ul></div>
+            <div class="col"><h4>Notice</h4><ul><li>Robins singing through the cold</li><li>Hazel catkins in February</li><li>Frost ferns on the glass</li></ul></div>
+            <div class="col"><h4>Rest</h4><ul><li>Let the beds lie under mulch</li><li>Mend one thing slowly</li><li>Go to bed with the dark</li></ul></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Daylight chart (single series, current season highlighted) -->
+    <section class="section section-wash" id="light" aria-labelledby="light-title">
+      <div class="container light-grid">
+        <header class="section-head">
+          <p class="eyebrow">Daylight</p>
+          <h2 id="light-title">How the light moves through the year</h2>
+          <p class="muted">Hours between sunrise and sunset at 45° north, the latitude of Turin, Montréal and Portland. The months of the season you picked are highlighted.</p>
+          <p class="stat">
+            <span class="stat-num" data-season="spring">+5h 40m</span>
+            <span class="stat-num" data-season="summer">15h 30m</span>
+            <span class="stat-num" data-season="autumn">−5h 20m</span>
+            <span class="stat-num" data-season="winter">8h 50m</span>
+            <span class="stat-label" data-season="spring">light gained between March and June</span>
+            <span class="stat-label" data-season="summer">of daylight on the longest day</span>
+            <span class="stat-label" data-season="autumn">light lost between September and December</span>
+            <span class="stat-label" data-season="winter">of daylight on the shortest day</span>
+          </p>
+        </header>
+
+        <figure class="chart">
+          <figcaption class="visually-hidden">Monthly day length in hours at 45° north</figcaption>
+          <ol class="bars">
+            <li data-m="winter" style="--h: 9.1"><span class="bar"><span class="tip">9.1 h</span></span><span class="m">J<span class="m-rest">an</span></span></li>
+            <li data-m="winter" style="--h: 10.3"><span class="bar"><span class="tip">10.3 h</span></span><span class="m">F<span class="m-rest">eb</span></span></li>
+            <li data-m="spring" style="--h: 11.9"><span class="bar"><span class="tip">11.9 h</span></span><span class="m">M<span class="m-rest">ar</span></span></li>
+            <li data-m="spring" style="--h: 13.4"><span class="bar"><span class="tip">13.4 h</span></span><span class="m">A<span class="m-rest">pr</span></span></li>
+            <li data-m="spring" style="--h: 14.8"><span class="bar"><span class="tip">14.8 h</span></span><span class="m">M<span class="m-rest">ay</span></span></li>
+            <li data-m="summer" style="--h: 15.5"><span class="bar"><span class="tip">15.5 h</span></span><span class="m">J<span class="m-rest">un</span></span></li>
+            <li data-m="summer" style="--h: 15.1"><span class="bar"><span class="tip">15.1 h</span></span><span class="m">J<span class="m-rest">ul</span></span></li>
+            <li data-m="summer" style="--h: 13.9"><span class="bar"><span class="tip">13.9 h</span></span><span class="m">A<span class="m-rest">ug</span></span></li>
+            <li data-m="autumn" style="--h: 12.4"><span class="bar"><span class="tip">12.4 h</span></span><span class="m">S<span class="m-rest">ep</span></span></li>
+            <li data-m="autumn" style="--h: 10.8"><span class="bar"><span class="tip">10.8 h</span></span><span class="m">O<span class="m-rest">ct</span></span></li>
+            <li data-m="autumn" style="--h: 9.5"><span class="bar"><span class="tip">9.5 h</span></span><span class="m">N<span class="m-rest">ov</span></span></li>
+            <li data-m="winter" style="--h: 8.8"><span class="bar"><span class="tip">8.8 h</span></span><span class="m">D<span class="m-rest">ec</span></span></li>
+          </ol>
+          <div class="axis" aria-hidden="true"><span>16 h</span><span>8 h</span><span>0</span></div>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Moon phases -->
+    <section class="section" id="moon" aria-labelledby="moon-title">
+      <div class="container">
+        <header class="section-head section-head-row">
+          <div>
+            <p class="eyebrow">The moon</p>
+            <h2 id="moon-title">One cycle, twenty-nine and a half days</h2>
+          </div>
+          <p class="muted">Old gardeners sowed leafy crops on the waxing moon and roots on the waning. The science is thin, but it's a good excuse to look up every night.</p>
+        </header>
+
+        <ol class="moons">
+          <li><span class="moon m-new" aria-hidden="true"></span><strong>New</strong><span>Day 0</span></li>
+          <li><span class="moon m-wax-cres" aria-hidden="true"></span><strong>Waxing crescent</strong><span>Day 4</span></li>
+          <li><span class="moon m-first" aria-hidden="true"></span><strong>First quarter</strong><span>Day 7</span></li>
+          <li><span class="moon m-wax-gib" aria-hidden="true"></span><strong>Waxing gibbous</strong><span>Day 11</span></li>
+          <li><span class="moon m-full" aria-hidden="true"></span><strong>Full</strong><span>Day 15</span></li>
+          <li><span class="moon m-wan-gib" aria-hidden="true"></span><strong>Waning gibbous</strong><span>Day 18</span></li>
+          <li><span class="moon m-last" aria-hidden="true"></span><strong>Last quarter</strong><span>Day 22</span></li>
+          <li><span class="moon m-wan-cres" aria-hidden="true"></span><strong>Waning crescent</strong><span>Day 26</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Field guide carousel (scroll snap) -->
+    <section class="section section-wash" id="guide" aria-labelledby="guide-title">
+      <div class="container">
+        <header class="section-head section-head-row">
+          <div>
+            <p class="eyebrow">Field guide</p>
+            <h2 id="guide-title">Six plants worth knowing by heart</h2>
+          </div>
+          <p class="muted">Scroll sideways. Each one is common, forgiving and generous, and good company for a first garden.</p>
+        </header>
+      </div>
+
+      <ul class="rail" aria-label="Plants" tabindex="0">
+        <li class="plant">
+          <span class="plant-art art-sorrel" aria-hidden="true"></span>
+          <p class="plant-latin">Rumex acetosa</p>
+          <h3>Sorrel</h3>
+          <p>A lemony perennial that comes back every spring before almost anything else. Pick the young leaves.</p>
+          <p class="plant-meta"><span>Perennial</span><span>Part shade</span></p>
+        </li>
+        <li class="plant">
+          <span class="plant-art art-calendula" aria-hidden="true"></span>
+          <p class="plant-latin">Calendula officinalis</p>
+          <h3>Pot marigold</h3>
+          <p>Bright, edible petals from June to frost. It seeds itself around the garden, politely.</p>
+          <p class="plant-meta"><span>Annual</span><span>Full sun</span></p>
+        </li>
+        <li class="plant">
+          <span class="plant-art art-sage" aria-hidden="true"></span>
+          <p class="plant-latin">Salvia officinalis</p>
+          <h3>Common sage</h3>
+          <p>Soft grey leaves that smell of warm stone. It thrives on neglect and poor soil.</p>
+          <p class="plant-meta"><span>Shrub</span><span>Full sun</span></p>
+        </li>
+        <li class="plant">
+          <span class="plant-art art-honesty" aria-hidden="true"></span>
+          <p class="plant-latin">Lunaria annua</p>
+          <h3>Honesty</h3>
+          <p>Purple spring flowers, then papery silver seed discs that catch the low winter light.</p>
+          <p class="plant-meta"><span>Biennial</span><span>Any light</span></p>
+        </li>
+        <li class="plant">
+          <span class="plant-art art-chard" aria-hidden="true"></span>
+          <p class="plant-latin">Beta vulgaris</p>
+          <h3>Rainbow chard</h3>
+          <p>Crimson and gold stems that shine through a winter frost. Cut leaves as you need them.</p>
+          <p class="plant-meta"><span>Biennial</span><span>Sun or shade</span></p>
+        </li>
+        <li class="plant">
+          <span class="plant-art art-hellebore" aria-hidden="true"></span>
+          <p class="plant-latin">Helleborus niger</p>
+          <h3>Hellebore</h3>
+          <p>The Christmas rose flowers in the depths of winter, nodding quietly toward the soil.</p>
+          <p class="plant-meta"><span>Perennial</span><span>Shade</span></p>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="section" id="letter" aria-labelledby="letter-title">
+      <div class="container">
+        <div class="letter">
+          <div>
+            <p class="eyebrow">The Almanac letter</p>
+            <h2 id="letter-title">Four letters a year, one each solstice and equinox.</h2>
+            <p class="muted">A short, hand-written note on what's changing outside. No tracking and no sales, and you can unsubscribe with one click.</p>
+          </div>
+          <form class="letter-form" action="mailto:hello@almanac.example?subject=Subscribe" method="post" enctype="text/plain">
+            <label for="email">Email address</label>
+            <div class="field-row">
+              <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com">
+              <button type="submit">Subscribe</button>
+            </div>
+            <p class="hint">We'll only use this to send the four letters.</p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p><span class="brand-mark" aria-hidden="true"></span> Almanac · A slow guide to the year</p>
+      <p><a href="../index.html">← All projects</a></p>
+    </div>
+  </footer>
+</body>
+</html>
