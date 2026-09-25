@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Nebula Strike — a 3D arcade game in pure HTML &amp; CSS</title>
+  <meta name="description" content="Nebula Strike is a 60-second 3D arcade shooter built with nothing but HTML and CSS: perspective, preserve-3d, :has(), CSS counters and animated @property timers. Zero JavaScript.">
+  <meta property="og:title" content="Nebula Strike">
+  <meta property="og:description" content="A 3D arcade shooter with zero JavaScript.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- The whole game is one form: every target is a checkbox, and the reset button restarts it. -->
+  <form class="game" action="#" aria-label="Nebula Strike game">
+
+    <!-- Backdrop: nebula, warp starfield, synthwave sun, mountains and a scrolling grid floor -->
+    <div class="sky" aria-hidden="true">
+      <div class="nebula"></div>
+      <div class="stars s1"></div>
+      <div class="stars s2"></div>
+      <div class="stars s3"></div>
+      <div class="sun"></div>
+      <div class="ridge far"></div>
+      <div class="ridge near"></div>
+      <div class="floor"><div class="grid"></div></div>
+    </div>
+
+    <!-- 3D play field: perspective lives here, targets fly from deep Z toward the player -->
+    <div class="world">
+      <div class="field" role="group" aria-label="Targets: select a target to shoot it">
+          <input class="hit cube" type="checkbox" id="t01" aria-label="Drone 1">
+          <label class="target cube" for="t01" style="--x0:-44vw;--y0:7vh;--x1:-20vw;--y1:1vh;--dur:8.75s;--delay:0.24s;--spin:2.84s;--hue:200">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t02" aria-label="Drone 2">
+          <label class="target cube" for="t02" style="--x0:44vw;--y0:-13vh;--x1:30vw;--y1:2vh;--dur:8.96s;--delay:1.04s;--spin:2.39s;--hue:200">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t03" aria-label="Drone 3">
+          <label class="target cube" for="t03" style="--x0:-31vw;--y0:2vh;--x1:-8vw;--y1:7vh;--dur:8.49s;--delay:1.89s;--spin:3.43s;--hue:320">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t04" aria-label="Drone 4">
+          <label class="target cube" for="t04" style="--x0:12vw;--y0:-20vh;--x1:-30vw;--y1:30vh;--dur:7.55s;--delay:2.73s;--spin:4.27s;--hue:320">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t05" aria-label="Drone 5">
+          <label class="target cube" for="t05" style="--x0:-10vw;--y0:-15vh;--x1:20vw;--y1:-18vh;--dur:7.44s;--delay:4.19s;--spin:3.21s;--hue:185">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t06" aria-label="Drone 6">
+          <label class="target cube" for="t06" style="--x0:-17vw;--y0:-2vh;--x1:-11vw;--y1:-24vh;--dur:7.70s;--delay:4.87s;--spin:2.36s;--hue:200">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit gold" type="checkbox" id="t07" aria-label="Gold core 7">
+          <label class="target gold" for="t07" style="--x0:18vw;--y0:-16vh;--x1:-28vw;--y1:-8vh;--dur:4.72s;--delay:5.47s;--spin:3.32s">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i><s></s><s></s></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+5</span>
+          </label>
+          <input class="hit gold" type="checkbox" id="t08" aria-label="Gold core 8">
+          <label class="target gold" for="t08" style="--x0:-1vw;--y0:-10vh;--x1:17vw;--y1:-19vh;--dur:4.90s;--delay:6.59s;--spin:3.79s">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i><s></s><s></s></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+5</span>
+          </label>
+          <input class="hit mine" type="checkbox" id="t09" aria-label="Mine 9">
+          <label class="target mine" for="t09" style="--x0:6vw;--y0:-39vh;--x1:-24vw;--y1:-1vh;--dur:6.58s;--delay:7.52s;--spin:4.45s">
+            <span class="body"><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">−3</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t10" aria-label="Drone 10">
+          <label class="target cube" for="t10" style="--x0:50vw;--y0:-35vh;--x1:24vw;--y1:-1vh;--dur:8.72s;--delay:8.42s;--spin:3.36s;--hue:200">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit gold" type="checkbox" id="t11" aria-label="Gold core 11">
+          <label class="target gold" for="t11" style="--x0:18vw;--y0:10vh;--x1:-33vw;--y1:-9vh;--dur:4.89s;--delay:9.31s;--spin:3.02s">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i><s></s><s></s></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+5</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t12" aria-label="Drone 12">
+          <label class="target cube" for="t12" style="--x0:-57vw;--y0:-39vh;--x1:23vw;--y1:-8vh;--dur:6.58s;--delay:10.39s;--spin:3.86s;--hue:280">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit mine" type="checkbox" id="t13" aria-label="Mine 13">
+          <label class="target mine" for="t13" style="--x0:-14vw;--y0:-35vh;--x1:-11vw;--y1:-10vh;--dur:7.95s;--delay:11.39s;--spin:3.60s">
+            <span class="body"><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">−3</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t14" aria-label="Drone 14">
+          <label class="target cube" for="t14" style="--x0:-60vw;--y0:-10vh;--x1:33vw;--y1:17vh;--dur:6.25s;--delay:12.17s;--spin:3.93s;--hue:300">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t15" aria-label="Drone 15">
+          <label class="target cube" for="t15" style="--x0:53vw;--y0:-29vh;--x1:33vw;--y1:16vh;--dur:7.00s;--delay:12.84s;--spin:3.12s;--hue:185">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t16" aria-label="Drone 16">
+          <label class="target cube" for="t16" style="--x0:32vw;--y0:-30vh;--x1:-12vw;--y1:-23vh;--dur:6.45s;--delay:13.59s;--spin:4.10s;--hue:300">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit gold" type="checkbox" id="t17" aria-label="Gold core 17">
+          <label class="target gold" for="t17" style="--x0:24vw;--y0:-18vh;--x1:-25vw;--y1:11vh;--dur:4.02s;--delay:14.79s;--spin:3.41s">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i><s></s><s></s></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+5</span>
+          </label>
+          <input class="hit mine" type="checkbox" id="t18" aria-label="Mine 18">
+          <label class="target mine" for="t18" style="--x0:59vw;--y0:-32vh;--x1:35vw;--y1:-12vh;--dur:7.26s;--delay:15.48s;--spin:2.75s">
+            <span class="body"><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">−3</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t19" aria-label="Drone 19">
+          <label class="target cube" for="t19" style="--x0:15vw;--y0:-20vh;--x1:25vw;--y1:2vh;--dur:8.50s;--delay:16.74s;--spin:3.72s;--hue:320">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t20" aria-label="Drone 20">
+          <label class="target cube" for="t20" style="--x0:-7vw;--y0:-8vh;--x1:-25vw;--y1:-15vh;--dur:7.57s;--delay:17.21s;--spin:2.21s;--hue:200">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t21" aria-label="Drone 21">
+          <label class="target cube" for="t21" style="--x0:-38vw;--y0:-31vh;--x1:27vw;--y1:22vh;--dur:6.36s;--delay:18.32s;--spin:3.31s;--hue:185">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit mine" type="checkbox" id="t22" aria-label="Mine 22">
+          <label class="target mine" for="t22" style="--x0:53vw;--y0:-5vh;--x1:-15vw;--y1:-12vh;--dur:8.02s;--delay:19.24s;--spin:3.95s">
+            <span class="body"><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">−3</span>
+          </label>
+          <input class="hit mine" type="checkbox" id="t23" aria-label="Mine 23">
+          <label class="target mine" for="t23" style="--x0:56vw;--y0:-36vh;--x1:18vw;--y1:15vh;--dur:7.10s;--delay:19.97s;--spin:3.37s">
+            <span class="body"><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">−3</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t24" aria-label="Drone 24">
+          <label class="target cube" for="t24" style="--x0:43vw;--y0:-10vh;--x1:-30vw;--y1:9vh;--dur:8.63s;--delay:21.04s;--spin:4.37s;--hue:300">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t25" aria-label="Drone 25">
+          <label class="target cube" for="t25" style="--x0:-43vw;--y0:-14vh;--x1:-20vw;--y1:4vh;--dur:6.95s;--delay:21.73s;--spin:2.90s;--hue:185">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t26" aria-label="Drone 26">
+          <label class="target cube" for="t26" style="--x0:54vw;--y0:9vh;--x1:-30vw;--y1:17vh;--dur:7.98s;--delay:23.08s;--spin:2.71s;--hue:185">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t27" aria-label="Drone 27">
+          <label class="target cube" for="t27" style="--x0:-10vw;--y0:-9vh;--x1:-29vw;--y1:29vh;--dur:6.67s;--delay:23.64s;--spin:3.17s;--hue:280">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t28" aria-label="Drone 28">
+          <label class="target cube" for="t28" style="--x0:-20vw;--y0:-35vh;--x1:8vw;--y1:-3vh;--dur:7.66s;--delay:24.50s;--spin:3.64s;--hue:320">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t29" aria-label="Drone 29">
+          <label class="target cube" for="t29" style="--x0:-52vw;--y0:-33vh;--x1:-36vw;--y1:-18vh;--dur:6.25s;--delay:25.31s;--spin:3.94s;--hue:300">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit mine" type="checkbox" id="t30" aria-label="Mine 30">
+          <label class="target mine" for="t30" style="--x0:48vw;--y0:3vh;--x1:20vw;--y1:-15vh;--dur:7.98s;--delay:26.30s;--spin:2.84s">
+            <span class="body"><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">−3</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t31" aria-label="Drone 31">
+          <label class="target cube" for="t31" style="--x0:42vw;--y0:4vh;--x1:-21vw;--y1:-20vh;--dur:6.81s;--delay:27.16s;--spin:3.60s;--hue:200">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+          <input class="hit cube" type="checkbox" id="t32" aria-label="Drone 32">
+          <label class="target cube" for="t32" style="--x0:-52vw;--y0:-24vh;--x1:-22vw;--y1:-24vh;--dur:7.02s;--delay:28.06s;--spin:2.50s;--hue:320">
+            <span class="body"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="boom" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span>
+            <span class="pts" aria-hidden="true">+1</span>
+          </label>
+
+      </div>
+    </div>
+
+    <!-- HUD comes after the targets in the document, so CSS counters already hold the score -->
+    <div class="hud" role="status">
+      <p class="stat score"><span>Score</span><output></output></p>
+      <p class="stat time"><span>Time</span><output></output></p>
+      <div class="bar" aria-hidden="true"><i></i></div>
+      <p class="pause-wrap">
+        <input type="checkbox" id="pause" class="sr-only" accesskey="p">
+        <label for="pause" class="chip">Pause</label>
+      </p>
+    </div>
+
+    <div class="flash" aria-hidden="true"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+
+    <!-- Pause menu -->
+    <section class="panel paused" aria-label="Paused">
+      <h2>Paused</h2>
+      <p>Everything is frozen with <code>animation-play-state</code>.</p>
+      <div class="actions">
+        <label for="pause" class="btn">Resume</label>
+        <button type="reset" class="btn ghost">Quit to title</button>
+      </div>
+    </section>
+
+    <!-- Title screen -->
+    <section class="panel title" aria-labelledby="game-title">
+      <!-- Declarative shadow DOM: an encapsulated 3D logo component, no JavaScript needed -->
+      <neon-logo>
+        <template shadowrootmode="open">
+          <style>
+            :host { display: block; perspective: 700px; }
+            .tilt { transform-style: preserve-3d; animation: sway 6s ease-in-out infinite; position: relative; }
+            .glint { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen;
+              background: linear-gradient(105deg, transparent 40%, rgb(255 255 255 / .55) 50%, transparent 60%) no-repeat;
+              background-size: 250% 100%; animation: glint 4s ease-in-out infinite;
+              mask: linear-gradient(#000 0 0); }
+            @keyframes sway { 0%, 100% { transform: rotateX(18deg) rotateY(-14deg); } 50% { transform: rotateX(8deg) rotateY(14deg); } }
+            @keyframes glint { 0%, 55% { background-position: 150% 0; } 100% { background-position: -60% 0; } }
+            @media (prefers-reduced-motion: reduce) { .tilt, .glint { animation: none; } }
+          </style>
+          <div class="tilt"><slot></slot><div class="glint"></div></div>
+        </template>
+        <h1 id="game-title" class="logo"><span>Nebula</span> <span>Strike</span></h1>
+      </neon-logo>
+
+      <p class="tag">A 60-second 3D arcade shooter. <strong>Zero JavaScript.</strong></p>
+
+      <ul class="legend">
+        <li><span class="mini cube" aria-hidden="true"></span> Drone <b>+1</b></li>
+        <li><span class="mini gold" aria-hidden="true"></span> Gold core <b>+5</b></li>
+        <li><span class="mini mine" aria-hidden="true"></span> Mine <b>−3</b></li>
+      </ul>
+
+      <!-- form="prefs" ties these radios to a separate form, so "Play again" (a reset) keeps the chosen difficulty -->
+      <fieldset class="diff">
+        <legend>Difficulty</legend>
+        <input type="radio" name="diff" form="prefs" id="d-easy" value="easy">
+        <label for="d-easy">Cadet</label>
+        <input type="radio" name="diff" form="prefs" id="d-normal" value="normal" checked>
+        <label for="d-normal">Pilot</label>
+        <input type="radio" name="diff" form="prefs" id="d-hard" value="hard">
+        <label for="d-hard">Ace</label>
+      </fieldset>
+
+      <p class="start-wrap">
+        <input type="checkbox" id="start" class="sr-only" accesskey="s">
+        <label for="start" class="btn big">Launch</label>
+      </p>
+
+      <button type="button" class="link" popovertarget="howto">How does this work without JS?</button>
+    </section>
+
+    <!-- Game over: revealed by an animation delayed exactly 60 s -->
+    <section class="panel over" aria-label="Game over">
+      <p class="kicker">Transmission ended</p>
+      <h2>Game over</h2>
+      <p class="final"><span>Final score</span><output></output></p>
+      <dl class="tally">
+        <div><dt>Drones</dt><dd class="c-drones"></dd></div>
+        <div><dt>Gold cores</dt><dd class="c-gold"></dd></div>
+        <div><dt>Mines hit</dt><dd class="c-mines"></dd></div>
+      </dl>
+      <button type="reset" class="btn big">Play again</button>
+    </section>
+  </form>
+  <form id="prefs" hidden></form>
+
+  <div id="howto" popover class="howto">
+    <h2>Under the hood</h2>
+    <ul>
+      <li><strong>Targets</strong> are <code>&lt;label&gt;</code>s for hidden checkboxes. Clicking one checks it, which triggers the explosion and pauses its flight path.</li>
+      <li><strong>Score</strong> is a CSS counter: <code>.hit:checked { counter-increment: score 1 }</code>, printed with <code>content: counter(score)</code>.</li>
+      <li><strong>Timer</strong> animates an integer <code>@property --t</code> from 60 to 0.</li>
+      <li><strong>Game over</strong> is an overlay with <code>animation-delay: 60s</code>.</li>
+      <li><strong>3D</strong>: <code>perspective</code>, <code>transform-style: preserve-3d</code> and separate <code>translate</code> / <code>scale</code> / <code>rotate</code> animations.</li>
+      <li><strong>Game state</strong> (start, pause, difficulty) is read with <code>:has()</code>. <strong>Restart</strong> is a native <code>&lt;button type="reset"&gt;</code>.</li>
+      <li><strong>Logo</strong> is a declarative shadow DOM <code>&lt;template shadowrootmode&gt;</code> component.</li>
+    </ul>
+    <button type="button" class="btn" popovertarget="howto" popovertargetaction="hide">Got it</button>
+  </div>
+</body>
+</html>
