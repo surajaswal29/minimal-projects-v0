@@ -5,6 +5,7 @@ A collection of small, minimal web projects built with plain HTML and CSS. Open 
 | # | Project | Folder |
 |---|---|---|
 | 01 | Product Portfolio (Stillwater) | [`product-portfolio-v1/`](product-portfolio-v1/) |
+| 02 | Wire: HTML + CSS ↔ server experiment (run `python3 server.py`) | [`wire-demo-v1/`](wire-demo-v1/) |
 
 ## Adding a project
 
